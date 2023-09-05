@@ -1,4 +1,4 @@
-package Models;
+package com.mssecurity.mssecurity.Models;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

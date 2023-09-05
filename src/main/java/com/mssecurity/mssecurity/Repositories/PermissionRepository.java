@@ -1,6 +1,6 @@
-package Repositories;
+package com.mssecurity.mssecurity.Repositories;
 
-import Models.Permission;
+import com.mssecurity.mssecurity.Models.Permission;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface PermissionRepository extends MongoRepository<Permission,String> {
