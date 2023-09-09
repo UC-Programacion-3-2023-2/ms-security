@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 @CrossOrigin
 @RestController
-@RequestMapping("/users")
+@RequestMapping("api/users")
 public class UsersController {
     @Autowired
     private UserRepository theUserRepository;
@@ -20,13 +22,12 @@ public class UsersController {
     private RoleRepository theRoleRepository;
 
     @GetMapping("")
-    public List<User> index() {
-        return this.theUserRepository.findAll();
-    }
+    public List<User> index() {return this.theUserRepository.findAll();}
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public User store(@RequestBody User newUser) {
+        newUser.setPassword(this.convertSHA256(newUser.getPassword()));
         return this.theUserRepository.save(newUser);
     }
 
@@ -46,7 +47,7 @@ public class UsersController {
         if (theActualUser != null) {
             theActualUser.setName(theNewUser.getName());
             theActualUser.setEmail(theNewUser.getEmail());
-            theActualUser.setPassword(theNewUser.getPassword());
+            theActualUser.setPassword(this.convertSHA256(theNewUser.getPassword()));
             return this.theUserRepository.save(theActualUser);
         } else {
             return null;
@@ -88,5 +89,21 @@ public class UsersController {
         } else {
             return null;
         }
+    }
+    public String convertSHA256(String password) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+        byte[] hash = md.digest(password.getBytes());
+        StringBuffer sb = new StringBuffer();
+        for(byte b : hash) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }
