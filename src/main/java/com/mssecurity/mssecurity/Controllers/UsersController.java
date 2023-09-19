@@ -18,7 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 @CrossOrigin
 @RestController
-@RequestMapping("users")
+@RequestMapping("api/users")
 public class UsersController {
     @Autowired
     private UserRepository theUserRepository;
