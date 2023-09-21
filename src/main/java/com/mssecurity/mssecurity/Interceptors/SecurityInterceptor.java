@@ -54,8 +54,12 @@ public class SecurityInterceptor implements HandlerInterceptor {
                 Role theRole=theUser.getRole();
                 String url=request.getRequestURI();
                 String method=request.getMethod();
+                System.out.println("Antes URL "+url+" metodo "+method);
+                url = url.replaceAll("[0-9a-fA-F]{24}", "?");
                 System.out.println("URL "+url+" metodo "+method);
+
                 //Pequeña tarea
+
                 Permission thePermission=this.thePermissionRepository.getPermission(url,method);
                 if(theRole!=null && thePermission!=null){
                     System.out.println("Rol "+theRole.getName()+ " Permission "+thePermission.getUrl());
@@ -63,6 +67,8 @@ public class SecurityInterceptor implements HandlerInterceptor {
                     if (theRolePermission==null){
                         success=false;
                     }
+                }else{
+                    success=false;
                 }
             }
 
