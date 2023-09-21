@@ -16,6 +16,9 @@ public class User {
     @DBRef
     private Role role;
 
+    public User(){
+
+    }
     public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
@@ -27,6 +30,10 @@ public class User {
     }
     public String getName() {
         return name;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public void setName(String name) {
