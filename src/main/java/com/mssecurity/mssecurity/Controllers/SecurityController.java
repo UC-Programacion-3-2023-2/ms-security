@@ -1,9 +1,11 @@
 package com.mssecurity.mssecurity.Controllers;
 
+import com.mssecurity.mssecurity.Models.Permission;
 import com.mssecurity.mssecurity.Models.User;
 import com.mssecurity.mssecurity.Repositories.UserRepository;
 import com.mssecurity.mssecurity.Services.EncryptionService;
 import com.mssecurity.mssecurity.Services.JwtService;
+import com.mssecurity.mssecurity.Services.ValidatorsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,9 @@ public class SecurityController {
     private JwtService jwtService;
     @Autowired
     private EncryptionService encryptionService;
-    private static final String BEARER_PREFIX = "Bearer ";
+    @Autowired
+    private ValidatorsService validatorService;
+
     //Método login
     @PostMapping("login")
     public String login(@RequestBody User theUser, final HttpServletResponse response) throws IOException {
@@ -42,19 +46,12 @@ public class SecurityController {
     //Método reset pass
     @GetMapping("token-validation")
     public User tokenValidation(final HttpServletRequest request) {
-        User theUser=null;
-        String authorizationHeader = request.getHeader("Authorization");
-        System.out.println("Header "+authorizationHeader);
-        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
-            String token = authorizationHeader.substring(BEARER_PREFIX.length());
-            System.out.println("Bearer Token: " + token);
-            User theUserFromToken=jwtService.getUserFromToken(token);
-            if(theUserFromToken!=null) {
-                theUser= this.theUserRepository.findById(theUserFromToken.get_id())
-                        .orElse(null);
-                theUser.setPassword("");
-            }
-        }
+        User theUser=this.validatorService.getUser(request);
         return theUser;
+    }
+    @PostMapping("permissions-validation")
+    public boolean permissionsValidation(final HttpServletRequest request,@RequestBody Permission thePermission) {
+        boolean success=this.validatorService.validationRolePermission(request,thePermission.getUrl(),thePermission.getMethod());
+        return success;
     }
 }
